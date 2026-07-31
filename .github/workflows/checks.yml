@@ -1,0 +1,26 @@
+name: checks
+
+# Lint + unit tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint & format
+        run: pre-commit run --all-files --show-diff-on-failure
+
+      - name: Tests
+        run: pytest
