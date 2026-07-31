@@ -1,0 +1,17 @@
+{
+  // Bundled ruff, not the `rev` pinned in .pre-commit-config.yaml, so
+  // formatting can drift after an autoupdate bump.
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    },
+    "editor.rulers": [88]
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  // No pytestArgs: pytest.ini governs discovery.
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false
+}
