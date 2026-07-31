@@ -13,4 +13,9 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+      - id: check-toml
       - id: check-merge-conflict
+      - id: check-case-conflict   # names that collide on macOS but not on Linux CI
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: detect-private-key

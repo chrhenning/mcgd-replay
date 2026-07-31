@@ -1,0 +1,45 @@
+name: pre-commit autoupdate
+
+# Dependabot has no pre-commit ecosystem, so .pre-commit-config.yaml's
+# `rev:` pins are bumped here instead.
+on:
+  schedule:
+    - cron: "0 6 1 * *"   # 06:00 UTC, 1st of the month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autoupdate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install pre-commit
+        # Reuse the pin without its `-r requirements.txt` line.
+        run: grep '^pre-commit==' requirements-dev.txt | xargs pip install
+
+      - name: Update hook versions
+        run: pre-commit autoupdate
+
+      - name: Run hooks with updated versions
+        # Autofixes land in the same PR. Hooks exit non-zero whenever they
+        # modify a file, which is the expected case here.
+        run: pre-commit run --all-files --show-diff-on-failure || true
+
+      - uses: peter-evans/create-pull-request@v8
+        with:
+          branch: chore/pre-commit-autoupdate
+          delete-branch: true
+          commit-message: "ci: update pre-commit hook versions"
+          title: "ci: update pre-commit hook versions"
+          body: |
+            Monthly `pre-commit autoupdate`. Hooks were re-run with `--all-files`,
+            so any autofixes are included. Check the job log for manual fixes.
+          labels: dependencies
