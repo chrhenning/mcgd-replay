@@ -31,7 +31,7 @@ def autocorrelation(x):
     return acf / acf[0]
 
 
-def integrated_autocorrelation_time(x, c=5.0):
+def integrated_autocorrelation_time(x, c=5.0, tol=50.0):
     """Integrated autocorrelation time via Sokal's automatic windowing.
 
     The estimator ``tau(M) = 1 + 2 * sum_{k<=M} acf(k)`` is unbiased but its variance
@@ -39,19 +39,33 @@ def integrated_autocorrelation_time(x, c=5.0):
     truncates at the first ``M >= c * tau(M)`` — the smallest window still several
     correlation times long — which is the standard bias/variance compromise.
 
+    Such an ``M`` always exists, but not always for the right reason: the linear
+    autocovariances of a mean-centred series sum to ``c_0 / 2``, so ``tau(n - 1)`` is
+    identically zero and the rule always triggers, if need be down in the noise floor
+    of the tail. Hence ``tol``: a truncated estimate is otherwise indistinguishable
+    from a converged one.
+
     Returns the estimate in chain steps; roughly 1 for i.i.d. samples.
+
+    Raises:
+        ValueError: If the series is shorter than ``tol`` correlation times.
     """
     acf = autocorrelation(x)
     tau = 2.0 * np.cumsum(acf) - 1.0
 
     windows = np.arange(len(tau))
-    converged = windows >= c * tau
-    # Falling back to the longest window means the series is too short to resolve tau;
-    # the estimate is then a lower bound rather than an error.
-    m = int(np.argmax(converged)) if converged.any() else len(tau) - 1
-    return float(tau[m])
+    m = int(np.argmax(windows >= c * tau))
+    tau_int = float(tau[m])
+
+    if len(x) < tol * tau_int:
+        needed = int(np.ceil(tol * tau_int))
+        raise ValueError(
+            f"series of {len(x)} steps is too short to resolve tau_int, estimated at "
+            f"{tau_int:.0f} steps; needs at least tol * tau_int = {needed} steps"
+        )
+    return tau_int
 
 
-def effective_sample_size(x, c=5.0):
+def effective_sample_size(x, c=5.0, tol=50.0):
     """Number of independent samples the series is worth, ``n / tau_int``."""
-    return len(x) / integrated_autocorrelation_time(x, c=c)
+    return len(x) / integrated_autocorrelation_time(x, c=c, tol=tol)
