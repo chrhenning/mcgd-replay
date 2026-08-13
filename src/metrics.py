@@ -34,16 +34,13 @@ def autocorrelation(x):
 def integrated_autocorrelation_time(x, c=5.0, tol=50.0):
     """Integrated autocorrelation time via Sokal's automatic windowing.
 
-    The estimator ``tau(M) = 1 + 2 * sum_{k<=M} acf(k)`` is unbiased but its variance
-    grows with ``M``, since high lags contribute noise rather than signal. Sokal's rule
-    truncates at the first ``M >= c * tau(M)`` — the smallest window still several
-    correlation times long — which is the standard bias/variance compromise.
+    ``tau(M) = 1 + 2 * sum_{k<=M} acf(k)`` is unbiased but its variance grows with
+    ``M``; Sokal truncates at the first ``M >= c * tau(M)``, the standard compromise.
 
-    Such an ``M`` always exists, but not always for the right reason: the linear
-    autocovariances of a mean-centred series sum to ``c_0 / 2``, so ``tau(n - 1)`` is
-    identically zero and the rule always triggers, if need be down in the noise floor
-    of the tail. Hence ``tol``: a truncated estimate is otherwise indistinguishable
-    from a converged one.
+    Such an ``M`` always exists, but not always for the right reason: autocovariances of
+    a mean-centred series sum to ``c_0 / 2``, so ``tau(n - 1)`` is identically zero and
+    the rule always triggers, if need be down in the noise floor of the tail. Hence
+    ``tol``: a truncated estimate is otherwise indistinguishable from a converged one.
 
     Returns the estimate in chain steps; roughly 1 for i.i.d. samples.
 

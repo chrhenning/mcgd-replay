@@ -19,12 +19,8 @@ ALPHA = 1e-3
 def assert_stationary(moon, delta, rho):
     """Assert the chain's law after ``N_STEPS`` is still the moon's own law.
 
-    Many short chains rather than one long run, because the two answer different
-    questions. A long run tests *mixing*, which we deliberately vary — at ``delta=0.02``
-    the angle needs ~(pi/delta)^2 steps just to cross its interval, so any feasible run
-    has an effective sample size near 1 and KS rejects however exact the kernel is.
-    Stepping independent chains from a stationary start tests ``pi P^k = pi`` directly,
-    on genuinely independent samples, which is what KS needs to be valid.
+    Many short chains rather than one long run: a long run tests *mixing*, which we
+    deliberately vary, so KS would reject at ``delta=0.02`` however exact the kernel is.
     """
     rng = np.random.default_rng(0)
     chains = [MoonChain(moon, delta, rho, rng=rng) for _ in range(N_CHAINS)]
@@ -50,11 +46,7 @@ def test_fold_reflects():
 @pytest.mark.parametrize("rho", RHOS)
 @pytest.mark.parametrize("delta", DELTAS)
 def test_chain_is_stationary_at_the_moon_law(delta, rho):
-    """Milestone M0's acceptance criterion.
-
-    Nothing downstream is trustworthy unless the day stream targets exactly the day's
-    distribution.
-    """
+    """Milestone M0's acceptance criterion."""
     assert_stationary(moon=0, delta=delta, rho=rho)
 
 
