@@ -17,8 +17,8 @@ __all__ = [
 def autocorrelation(x):
     """Autocorrelations of a scalar series at lags ``0..n-1``, normalised to 1 at lag 0.
 
-    Via FFT because the sweep needs this on series of ~1e5 steps, where the direct
-    O(n^2) sum is the bottleneck.
+    Via FFT: on the ~1e5-step series this runs on, the direct O(n^2) sum is the
+    bottleneck.
     """
     x = np.asarray(x, dtype=float)
     x = x - x.mean()

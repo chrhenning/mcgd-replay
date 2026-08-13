@@ -5,9 +5,8 @@ from sklearn.datasets import make_moons
 
 from src.chains import MoonChain, fold
 
-# The correlation grid the Phase-1 sweep runs on. Stationarity has to hold at every
-# setting, since the whole design rests on correlation being the only difference
-# between arms.
+# Stationarity has to hold across the whole correlation grid: the design rests on
+# correlation being the only difference between arms.
 DELTAS = [0.02, 0.05, 0.12, 0.3, 0.8]
 RHOS = [0.0, 0.5, 0.9, 0.99]
 
@@ -46,7 +45,6 @@ def test_fold_reflects():
 @pytest.mark.parametrize("rho", RHOS)
 @pytest.mark.parametrize("delta", DELTAS)
 def test_chain_is_stationary_at_the_moon_law(delta, rho):
-    """Milestone M0's acceptance criterion."""
     assert_stationary(moon=0, delta=delta, rho=rho)
 
 
