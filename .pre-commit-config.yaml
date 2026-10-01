@@ -1,7 +1,7 @@
 # Run `pre-commit install` once to enable these on every commit.
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.1
+    rev: v0.16.9
     hooks:
       - id: ruff-check        # lint (with autofix)
         args: [--fix]
